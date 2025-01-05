@@ -48,6 +48,8 @@ import com.example.cupcake.ui.theme.CupcakeTheme
 @Composable
 fun OrderSummaryScreen(
     orderUiState: OrderUiState,
+    onCancelButtonClicked: () -> Unit,
+    onSendButtonClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val resources = LocalContext.current.resources
@@ -85,7 +87,7 @@ fun OrderSummaryScreen(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
             items.forEach { item ->
-                Text(item.first.uppercase())
+                Text(text =  item.first.uppercase())
                 Text(text = item.second, fontWeight = FontWeight.Bold)
                 Divider(thickness = dimensionResource(R.dimen.thickness_divider))
             }
@@ -103,13 +105,29 @@ fun OrderSummaryScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {}
+                    onClick = { onSendButtonClicked(newOrder, orderSummary) }
+                    // Inside this lambda, you are calling
+                    // onSendButtonClicked(newOrder, orderSummary)—but only when the lambda
+                    // is executed.
+                    // The lambda is passed to onClick, deferring the function execution until
+                    // the button is clicked.
+                    // Without {} it would look like an immediate function call.
+                    // Adding () executes the function immediately, and its result
+                    // (not the function itself) is passed to onClick. This is incorrect
+                    // because onClick expects a lambda.
+                    // onSendButtonClicked(newOrder, orderSummary) is the result of a function call,
+                    // not a () -> Unit lambda.
                 ) {
                     Text(stringResource(R.string.send))
                 }
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {}
+                    onClick = onCancelButtonClicked
+                    // ↑ a reference to the function. No execution happens here
+                    // This is equivalent to: onClick = { onCancelButtonClicked() }
+                    // It is already a reference to a function that matches () -> Unit,
+                    // so it’s safe to assign directly.
+                    // No () are present, so the function is not executed immediately.
                 ) {
                     Text(stringResource(R.string.cancel))
                 }
@@ -124,6 +142,8 @@ fun OrderSummaryPreview() {
     CupcakeTheme {
         OrderSummaryScreen(
             orderUiState = OrderUiState(0, "Test", "Test", "$300.00"),
+            onSendButtonClicked = { subject: String, summary: String -> },
+            onCancelButtonClicked = {},
             modifier = Modifier.fillMaxHeight()
         )
     }
