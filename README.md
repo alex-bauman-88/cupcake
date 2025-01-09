@@ -9,3 +9,5 @@ Cupcake App implements a simple cupcake ordering app with a basic order flow. Us
 *   Kotlin
 *   Android Studio
 *   Jetpack Compose
+*   Navigation Component (Jetpack Navigation)
+*   Implicit Intents
